@@ -9,6 +9,6 @@ route.route("/userx").get(getAllusers);
 route.route("/signUp").post(signUp);
 route.route("/login").post(login);
 route.route("/secured/api").get(auth,securedApi);
-route.route("*").get(notFound);
+// route.route("*").get(notFound);
 
 export default route;
