@@ -58,7 +58,7 @@ export const signUp = wrraper(async (req, res, next) => {
         }
         const hashedPasswordData = await hashh(password);
         const sql1 = `select * from register where email="${email}" or username="${username}"`;
-        await connection.query(sql1, (err, result) => {
+        await connection.execute(sql1, (err, result) => {
             if (err) {
                 // if there is syntax error 
                 return next(new ApierrorCreator(`syntax error on sign up  : ${err}`,404))
@@ -70,7 +70,7 @@ export const signUp = wrraper(async (req, res, next) => {
                     //if there is no data that duplication then register the user
                     const values = [fullname, username, email, hashedPasswordData];
                     const sql = `insert into register (fullName,username,email,password) values(?,?,?,?)`;
-                    connection.query(sql, values, (err, result) => {
+                    connection.execute(sql, values, (err, result) => {
                         if (!err) {
                             console.table(result);
                             return res.status(200).json({ msg: { sucsess: true, msg: "user registerd succsesfully" } });
