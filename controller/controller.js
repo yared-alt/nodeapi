@@ -8,7 +8,7 @@ dotenv.config();
 
     
 export const securedApi = wrraper(async (req, res, next) => {
-    await connection.query("select * from register", (err, result) => {
+    await connection.execute("select * from register", (err, result) => {
         if (err) {
             return next(new ApierrorCreator(`syntax errorrrr : ${err}`, 400))
         }
@@ -21,9 +21,9 @@ export const securedApi = wrraper(async (req, res, next) => {
 export const login = wrraper(async (req, res, next) => {
     // console.log(req.body);
     const { password, email } = req.body;
-    connection.query(`select Password from register where Email="${email}"`, async (err, result) => {
+    connection.execute(`select Password from register where Email="${email}"`, async (err, result) => {
         if (err) {
-            console.log("invalid db query : " + err);
+            console.log("invalid db execute : " + err);
             return next(new ApierrorCreator(`syntax errorrrr : ${err}`, 400));
         }
         const hashedPass = result[0].Password;
@@ -38,7 +38,7 @@ export const login = wrraper(async (req, res, next) => {
 })
 
 export const getAllusers = wrraper(async (req, res,next) => {
-        await connection.query(`select * from register`, (err, result) => {
+        await connection.execute(`select * from register`, (err, result) => {
             if (err) {
                 console.log(err);
                 return next(new ApierrorCreator(`Syntax error : ${err}`,400));
