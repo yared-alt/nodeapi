@@ -8,25 +8,25 @@ dotenv.config();
 
     
 export const securedApi = wrraper(async (req, res, next) => {
-    await connection.execute("select * from register", (err, result) => {
+    await connection.execute("select * from register", (err, row) => {
         if (err) {
             return next(new ApierrorCreator(`syntax errorrrr : ${err}`, 400))
         }
-        console.log(result);
+        console.log(row);
         
-        return res.status(200).json({ sucsess: true, msg: result });
+        return res.status(200).json({ sucsess: true, msg: row });
     })
 })
 
 export const login = wrraper(async (req, res, next) => {
     // console.log(req.body);
     const { password, email } = req.body;
-    connection.execute(`select Password from register where Email="${email}"`, async (err, result) => {
+    connection.execute(`select Password from register where Email="${email}"`, async (err, row) => {
         if (err) {
             console.log("invalid db execute : " + err);
             return next(new ApierrorCreator(`syntax errorrrr : ${err}`, 400));
         }
-        const hashedPass = result[0].Password;
+        const hashedPass = row[0].Password;
         const comparePass = await cheker(password, hashedPass);
 
         if (!comparePass) {
@@ -38,13 +38,13 @@ export const login = wrraper(async (req, res, next) => {
 })
 
 export const getAllusers = wrraper(async (req, res,next) => {
-        await connection.execute(`select * from register`, (err, result) => {
+        await connection.execute(`select * from register`, (err, row) => {
             if (err) {
                 console.log(err);
                 return next(new ApierrorCreator(`Syntax error : ${err}`,400));
-            } if (result.length > 0) {
-                console.table(result);
-                return res.status(200).json({ msg: result });
+            } if (row.length > 0) {
+                console.table(row);
+                return res.status(200).json({ msg: row });
             }
             return next(new ApierrorCreator("user does not exist  : ", 404))
         })
@@ -58,21 +58,21 @@ export const signUp = wrraper(async (req, res, next) => {
         }
         const hashedPasswordData = await hashh(password);
         const sql1 = `select * from register where email="${email}" or username="${username}"`;
-        await connection.execute(sql1, (err, result) => {
+        await connection.execute(sql1, (err, row) => {
             if (err) {
                 // if there is syntax error 
                 return next(new ApierrorCreator(`syntax error on sign up  : ${err}`,404))
             } else {
-                if (result.length > 0) {
+                if (row.length > 0) {
                     // if there is data with the same email or error
                 return next(new ApierrorCreator(`user alredy exist !`,400))
                 } else {
                     //if there is no data that duplication then register the user
                     const values = [fullname, username, email, hashedPasswordData];
                     const sql = `insert into register (fullName,username,email,password) values(?,?,?,?)`;
-                    connection.execute(sql, values, (err, result) => {
+                    connection.execute(sql, values, (err, row) => {
                         if (!err) {
-                            console.table(result);
+                            console.table(row);
                             return res.status(200).json({ msg: { sucsess: true, msg: "user registerd succsesfully" } });
                         } else
                             return next(new ApierrorCreator(`syntax error on registering user  :  ${err}`,404))

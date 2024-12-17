@@ -6,6 +6,7 @@ import auth from "../middlware/auth.js";
 const route=express.Router();
 
 route.route("/userx").get(getAllusers);
+route.route("/").get(getAllusers);
 route.route("/signUp").post(signUp);
 route.route("/login").post(login);
 route.route("/secured/api").get(auth,securedApi);
